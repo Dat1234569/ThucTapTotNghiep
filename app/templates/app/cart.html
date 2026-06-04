@@ -1,0 +1,98 @@
+{% extends 'app/base.html' %}
+{% load static vnd_filters %}
+
+{% block cart_content %}
+<style>
+.page-wrap{max-width:1100px;margin:0 auto;padding:0 28px;}
+.cart-item{display:grid;grid-template-columns:80px 1fr auto;gap:20px;align-items:center;padding:20px 0;border-bottom:1px solid var(--border);}
+.cart-item:last-child{border-bottom:none;}
+.cart-item-img{width:80px;height:80px;background:#f5f4f1;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.cart-item-img img{width:100%;height:100%;object-fit:contain;padding:8px;}
+.qty-row{display:flex;align-items:center;gap:0;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;width:fit-content;}
+.qty-b{width:36px;height:36px;background:none;border:none;font-size:1.1rem;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;}
+.qty-b:hover{background:var(--paper);}
+.qty-n{width:42px;text-align:center;font-weight:600;font-size:.9rem;}
+.cart-summary{background:white;border:1px solid var(--border);border-radius:18px;padding:28px;position:sticky;top:88px;}
+</style>
+
+<section style="padding:60px 0 80px;">
+    <div class="page-wrap">
+        <div style="margin-bottom:36px;">
+            <p class="section-label">Mua sắm</p>
+            <h1 class="section-title">GIỎ HÀNG</h1>
+        </div>
+
+        {% if items %}
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div style="background:white;border:1px solid var(--border);border-radius:18px;padding:24px;">
+                    {% for item in items %}
+                    <div class="cart-item">
+                        <div class="cart-item-img">
+                            <img src="{{ item.product.ImageURL }}" alt="{{ item.product.name }}">
+                        </div>
+                        <div>
+                            <div style="font-size:.72rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;">
+                                {% for cat in item.product.category.all %}{{ cat.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                            </div>
+                            <h6 style="font-weight:600;font-size:.95rem;margin-bottom:8px;">{{ item.product.name }}</h6>
+                            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;color:var(--ink);">{{ item.product.price|vnd }}</div>
+                            <div class="qty-row" style="margin-top:10px;">
+                                <button class="qty-b update-cart" data-product="{{ item.product.id }}" data-action="remove">−</button>
+                                <span class="qty-n">{{ item.quantity }}</span>
+                                <button class="qty-b update-cart" data-product="{{ item.product.id }}" data-action="add">+</button>
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--ink);letter-spacing:1px;white-space:nowrap;">{{ item.get_total|vnd }}</div>
+                            <button class="update-cart" data-product="{{ item.product.id }}" data-action="delete"
+                                style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.78rem;margin-top:8px;transition:color .2s;padding:0;">✕ Xóa</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="cart-summary">
+                    <h5 style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;margin-bottom:20px;">TỔNG ĐƠN HÀNG</h5>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:.88rem;">
+                        <span style="color:var(--muted);">Số lượng</span>
+                        <span style="font-weight:600;">{{ order.get_cart_items }} sản phẩm</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:.88rem;">
+                        <span style="color:var(--muted);">Tạm tính</span>
+                        <span style="font-weight:600;">{{ order.get_cart_total|vnd }}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:.88rem;">
+                        <span style="color:var(--muted);">Giao hàng</span>
+                        <span style="font-weight:600;color:green;">Miễn phí</span>
+                    </div>
+                    <hr style="border-color:var(--border);margin:16px 0;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:24px;">
+                        <span style="font-weight:600;">Tổng cộng</span>
+                        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;">{{ order.get_cart_total|vnd }}</span>
+                    </div>
+                    <a href="{% url 'checkout' %}"
+                        style="display:block;text-align:center;padding:15px;background:var(--ink);color:white;border-radius:12px;font-size:.84rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:background .2s;margin-bottom:10px;">
+                        Đặt hàng →
+                    </a>
+                    <a href="{% url 'payment' %}"
+                        style="display:block;text-align:center;padding:14px;background:transparent;color:var(--ink);border:1.5px solid var(--border);border-radius:12px;font-size:.84rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:all .2s;">
+                        💳 Thanh toán Stripe
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <div style="text-align:center;padding:100px 0;">
+            <div style="font-size:4rem;margin-bottom:20px;">🛒</div>
+            <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;margin-bottom:10px;">GIỎ HÀNG TRỐNG</h3>
+            <p style="color:var(--muted);margin-bottom:28px;">Bạn chưa có sản phẩm nào trong giỏ hàng.</p>
+            <a href="{% url 'home' %}" style="display:inline-block;padding:14px 32px;background:var(--ink);color:white;border-radius:12px;text-decoration:none;font-size:.85rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Mua sắm ngay</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

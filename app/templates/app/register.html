@@ -1,0 +1,41 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block register %}
+<style>
+.auth-wrap{min-height:calc(100vh - 72px);display:flex;align-items:center;justify-content:center;padding:60px 20px;background:var(--paper);}
+.auth-card{background:white;border:1px solid var(--border);border-radius:24px;padding:48px;width:100%;max-width:480px;box-shadow:0 16px 48px rgba(0,0,0,.06);}
+.auth-input{width:100%;height:48px;padding:0 16px;border:1.5px solid var(--border);border-radius:12px;font-size:.92rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;margin-bottom:14px;}
+.auth-input:focus{border-color:var(--gold);}
+.auth-btn{width:100%;height:50px;background:var(--ink);color:white;border:none;border-radius:12px;font-size:.88rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background .2s;}
+.auth-btn:hover{background:var(--gold);}
+.auth-label{font-size:.78rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block;}
+.err-list{list-style:none;padding:0;margin:0 0 12px;}
+.err-list li{font-size:.8rem;color:#c0392b;background:#fdf0ee;border-radius:8px;padding:6px 12px;margin-bottom:4px;}
+</style>
+
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div style="text-align:center;margin-bottom:36px;">
+            <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;">ĐĂNG KÝ</h1>
+            <p style="font-size:.85rem;color:var(--muted);margin-top:4px;">Tạo tài khoản DLN Store</p>
+        </div>
+
+        <form method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+            {% for field in form %}
+            <label class="auth-label">{{ field.label }}</label>
+            <input class="auth-input" type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" placeholder="{{ field.label }}" {% if field.value %}value="{{ field.value }}"{% endif %}>
+            {% if field.errors %}
+            <ul class="err-list">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+            {% endif %}
+            {% endfor %}
+            <button type="submit" class="auth-btn" style="margin-top:8px;">Tạo tài khoản →</button>
+        </form>
+
+        <p style="text-align:center;margin-top:24px;font-size:.85rem;color:var(--muted);">
+            Đã có tài khoản? <a href="{% url 'login' %}" style="color:var(--gold);font-weight:600;text-decoration:none;">Đăng nhập</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
