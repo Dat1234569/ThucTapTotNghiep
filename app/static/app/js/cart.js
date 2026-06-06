@@ -1,4 +1,5 @@
 // Cart JS - Nguyen Duy Quy
+// Cart JS - Nguyen Duy Quy
 
 function getCookie(name) {
     let cookieValue = null;
@@ -80,4 +81,5 @@ function updateUserOrder(productId, action) {
         console.error('❌ Lỗi khi cập nhật giỏ hàng:', error);
     });
 }
+
 
